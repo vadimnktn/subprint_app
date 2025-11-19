@@ -1,8 +1,9 @@
-# subprint_app/.github/workflows/build.yml
 name: Build Android APK
 
 on:
   push:
+    branches: [ main ]
+  pull_request:
     branches: [ main ]
 
 jobs:
@@ -18,27 +19,15 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         
-    - name: Change config properties
-      run: |
-        cd app/src/main/assets
-        sed -i 's/app_name=.*/app_name=${{ secrets.APP_NAME }}/' config.properties
-        sed -i 's/server_ip=.*/server_ip=${{ secrets.SERVER_IP }}/' config.properties
-        sed -i 's/server_port=.*/server_port=${{ secrets.SERVER_PORT }}/' config.properties
-        sed -i 's/connection_timeout=.*/connection_timeout=${{ secrets.CONNECTION_TIMEOUT }}/' config.properties
-        sed -i 's/read_timeout=.*/read_timeout=${{ secrets.READ_TIMEOUT }}/' config.properties
-        
-    - name: Build APK
-      run: |
-        cd app
-        gradle assembleDebug
-        
-    - name: Check if APK exists
-      run: |
-        cd app
-        ls -la build/outputs/apk/debug/ || echo "APK not found"
-        
+    - name: Make gradlew executable
+      run: chmod +x ./gradlew
+    
+    - name: Build Debug APK
+      run: ./gradlew assembleDebug
+      
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: app-debug
         path: app/build/outputs/apk/debug/app-debug.apk
+        retention-days: 7
