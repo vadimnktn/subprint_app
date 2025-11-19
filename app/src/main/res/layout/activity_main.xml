@@ -1,6 +1,5 @@
-<!-- subprint_app/app/src/main/res/layout/activity_main.xml -->
-<!-- Основной layout приложения - содержит WebView и layout ошибки -->
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Основной layout приложения - содержит WebView и layout ошибки -->
 <androidx.swiperefreshlayout.widget.SwipeRefreshLayout 
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/swipeRefreshLayout"
