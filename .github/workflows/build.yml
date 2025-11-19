@@ -16,10 +16,8 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         
-    - name: Fix permissions and build
-      run: |
-        chmod +x ./gradlew
-        ./gradlew assembleDebug
+    - name: Build APK
+      run: bash build.sh
         
     - name: Upload APK
       uses: actions/upload-artifact@v4
