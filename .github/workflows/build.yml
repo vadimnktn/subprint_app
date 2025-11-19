@@ -13,14 +13,12 @@ jobs:
     - name: Make gradlew executable
       run: chmod +x ./gradlew
       
-    - name: Build APK
-      run: ./gradlew assembleDebug
-      
-    - name: Find and upload APK
+    - name: Build APK with script
       run: |
-        echo "=== APK files ==="
-        find . -name "*.apk" -type f
-      shell: bash
+        echo '#!/bin/bash' > build.sh
+        echo './gradlew assembleDebug' >> build.sh
+        chmod +x build.sh
+        ./build.sh
       
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
