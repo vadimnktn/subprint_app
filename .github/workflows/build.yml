@@ -22,13 +22,20 @@ jobs:
     - name: Make gradlew executable
       run: chmod +x ./gradlew
     
-    - name: Check project structure
+    - name: Debug project structure
       run: |
         ls -la
-        echo "=== Settings.gradle content ==="
-        cat settings.gradle || echo "No settings.gradle"
-        echo "=== Project structure ==="
-        find . -name "build.gradle" -o -name "settings.gradle" | head -20
+        find . -name "*.gradle" -type f
+        cat settings.gradle
+        echo "=== App directory exists? ==="
+        ls -la app/
       
-    - name: Build Debug APK
-      run: ./gradlew build
+    - name: Build with Gradle
+      run: ./gradlew assembleDebug
+      
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-debug
+        path: app/build/outputs/apk/debug/app-debug.apk
+        retention-days: 7
