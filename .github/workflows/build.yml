@@ -19,13 +19,22 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         
-    - name: Make files executable
+    - name: Make gradlew executable
+      run: chmod +x ./gradlew
+    
+    - name: Debug Gradle setup
       run: |
-        chmod +x ./gradlew
-        chmod +x ./build.sh
+        echo "=== Files structure ==="
+        find . -name "*.gradle" -type f
+        echo "=== Settings.gradle ==="
+        cat settings.gradle
+        echo "=== Root build.gradle ==="
+        cat build.gradle
+        echo "=== Gradle version ==="
+        ./gradlew --version
     
     - name: Build Debug APK
-      run: ./build.sh
+      run: ./gradlew :app:assembleDebug --stacktrace
       
     - name: Upload APK
       uses: actions/upload-artifact@v4
