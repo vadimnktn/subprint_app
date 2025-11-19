@@ -23,6 +23,5 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.7.0'
-    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.2.0'
+    // Убери временно все зависимости
 }
