@@ -22,14 +22,13 @@ jobs:
     - name: Make gradlew executable
       run: chmod +x ./gradlew
     
-    - name: Build Debug APK
+    - name: Check project structure
       run: |
-        ./gradlew tasks
-        ./gradlew app:assembleDebug
+        ls -la
+        echo "=== Settings.gradle content ==="
+        cat settings.gradle || echo "No settings.gradle"
+        echo "=== Project structure ==="
+        find . -name "build.gradle" -o -name "settings.gradle" | head -20
       
-    - name: Upload APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: app-debug
-        path: app/build/outputs/apk/debug/app-debug.apk
-        retention-days: 7
+    - name: Build Debug APK
+      run: ./gradlew build
