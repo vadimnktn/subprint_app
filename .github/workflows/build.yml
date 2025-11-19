@@ -15,7 +15,7 @@ jobs:
         docker run --rm \
           -v $PWD:/app \
           -w /app \
-          openjdk:17-jdk \
+          openjdk:17 \
           bash -c "chmod +x ./gradlew && ./gradlew assembleDebug"
         
     - name: Upload APK
