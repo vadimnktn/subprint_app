@@ -1,3 +1,4 @@
+# subprint_app/.github/workflows/build.yml
 name: Build Android APK
 
 on:
@@ -27,10 +28,9 @@ jobs:
         sed -i 's/read_timeout=.*/read_timeout=${{ secrets.READ_TIMEOUT }}/' config.properties
         
     - name: Build APK
-      uses: android-actions/build-apk@v2
-      with:
-        build-tools-version: '34.0.0'
-        target-sdk: 34
+      run: |
+        cd app
+        gradle assembleDebug
         
     - name: Upload APK
       uses: actions/upload-artifact@v4
