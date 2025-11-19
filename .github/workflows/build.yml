@@ -1,35 +1,27 @@
-name: Build Android APK
+name: Build APK
 
-on:
-  push:
-    branches: [ main ]
+on: [push]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v4
     
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        
-    - name: Change config properties
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v2
+      
+    - name: Change config
       run: |
         cd app/src/main/assets
         sed -i 's/app_name=.*/app_name=${{ secrets.APP_NAME }}/' config.properties
         sed -i 's/server_ip=.*/server_ip=${{ secrets.SERVER_IP }}/' config.properties
         sed -i 's/server_port=.*/server_port=${{ secrets.SERVER_PORT }}/' config.properties
-        sed -i 's/connection_timeout=.*/connection_timeout=${{ secrets.CONNECTION_TIMEOUT }}/' config.properties
-        sed -i 's/read_timeout=.*/read_timeout=${{ secrets.READ_TIMEOUT }}/' config.properties
         
-    - name: Build APK
+    - name: Build with Gradle
       run: |
         cd app
-        gradle assembleDebug
+        ./gradlew assembleDebug --no-daemon
         
     - name: Upload APK
       uses: actions/upload-artifact@v4
