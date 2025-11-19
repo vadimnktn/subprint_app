@@ -10,17 +10,19 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
+    - name: Make gradlew executable
+      run: chmod +x ./gradlew
+      
     - name: Build APK
       run: ./gradlew assembleDebug
       
-    - name: Find APK location
+    - name: Find and upload APK
       run: |
-        echo "=== Full search ==="
+        echo "=== APK files ==="
         find . -name "*.apk" -type f
-        echo "=== App build contents ==="
-        ls -R app/build/ || echo "No app/build"
+      shell: bash
       
-    - name: Upload any found APK
+    - name: Upload APK artifact
       uses: actions/upload-artifact@v4
       with:
         name: app-debug
