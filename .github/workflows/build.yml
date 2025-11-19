@@ -22,15 +22,7 @@ jobs:
     - name: Make gradlew executable
       run: chmod +x ./gradlew
     
-    - name: Debug project structure
-      run: |
-        ls -la
-        find . -name "*.gradle" -type f
-        cat settings.gradle
-        echo "=== App directory exists? ==="
-        ls -la app/
-      
-    - name: Build with Gradle
+    - name: Build Debug APK
       run: ./gradlew assembleDebug
       
     - name: Upload APK
