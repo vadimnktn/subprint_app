@@ -22,10 +22,8 @@ jobs:
     - name: Make gradlew executable
       run: chmod +x ./gradlew
     
-    - name: Build with direct command
-      run: |
-        GRADLE_CMD="./gradlew app:assembleDebug"
-        $GRADLE_CMD
+    - name: Build Debug APK
+      run: ./gradlew build
       
     - name: Upload APK
       uses: actions/upload-artifact@v4
