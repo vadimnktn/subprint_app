@@ -1,23 +1,4 @@
+// Корневой build.gradle - только настройки плагинов
 plugins {
     id 'com.android.application' version '8.2.2' apply false
-}
-
-android {
-    compileSdk 34
-    defaultConfig {
-        applicationId "com.subprint"
-        minSdk 29
-        targetSdk 34
-        versionCode 1
-        versionName "1.0"
-    }
-    buildTypes {
-        release {
-            minifyEnabled false
-        }
-    }
-}
-
-dependencies {
-    implementation 'androidx.appcompat:appcompat:1.6.1'
 }

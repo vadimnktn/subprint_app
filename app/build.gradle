@@ -1,3 +1,4 @@
+// Настройки сборки Android приложения
 plugins {
     id 'com.android.application'
 }
