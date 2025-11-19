@@ -10,10 +10,13 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - name: Build with Gradle Action
-      uses: gradle/gradle-build-action@v2
-      with:
-        arguments: assembleDebug
+    - name: Build with Docker
+      run: |
+        docker run --rm \
+          -v $PWD:/app \
+          -w /app \
+          openjdk:17-jdk \
+          bash -c "chmod +x ./gradlew && ./gradlew assembleDebug"
         
     - name: Upload APK
       uses: actions/upload-artifact@v4
