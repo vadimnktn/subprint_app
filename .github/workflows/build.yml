@@ -1,3 +1,4 @@
+# subprint_app/.github/workflows/build.yml
 name: Build Android APK
 
 on:
@@ -29,15 +30,12 @@ jobs:
     - name: Build APK
       run: |
         cd app
-        gradle assembleDebug --warning-mode none
+        gradle assembleDebug
         
-       - name: Check if APK exists
-  run: |
-    cd app
-    ls -la build/outputs/apk/debug/ || echo "APK not found" 
-        
-        
-        
+    - name: Check if APK exists
+      run: |
+        cd app
+        ls -la build/outputs/apk/debug/ || echo "APK not found"
         
     - name: Upload APK
       uses: actions/upload-artifact@v4
