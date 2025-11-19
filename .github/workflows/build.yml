@@ -10,19 +10,13 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - name: Make gradlew executable
-      run: chmod +x ./gradlew
-      
-    - name: Build APK with script
-      run: |
-        echo '#!/bin/bash' > build.sh
-        echo './gradlew assembleDebug' >> build.sh
-        chmod +x build.sh
-        ./build.sh
-      
-    - name: Upload APK artifact
+    - name: Build with Gradle Action
+      uses: gradle/gradle-build-action@v2
+      with:
+        arguments: assembleDebug
+        
+    - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: app-debug
         path: "**/*.apk"
-        retention-days: 7
