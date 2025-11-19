@@ -1,6 +1,23 @@
-// subprint_app/build.gradle
-// Корневой конфигурационный файл Gradle проекта
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
-    id 'com.android.application' version '7.4.2' apply false
+    id 'com.android.application'
+}
+
+android {
+    compileSdk 34
+    defaultConfig {
+        applicationId "com.subprint"
+        minSdk 29
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.6.1'
 }

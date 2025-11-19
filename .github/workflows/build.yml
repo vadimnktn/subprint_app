@@ -27,9 +27,10 @@ jobs:
         sed -i 's/read_timeout=.*/read_timeout=${{ secrets.READ_TIMEOUT }}/' config.properties
         
     - name: Build APK
-      run: |
-        cd app
-        gradle assembleDebug
+      uses: android-actions/build-apk@v2
+      with:
+        build-tools-version: '34.0.0'
+        target-sdk: 34
         
     - name: Upload APK
       uses: actions/upload-artifact@v4

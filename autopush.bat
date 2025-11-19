@@ -8,11 +8,11 @@ for /f "tokens=1-2 delims=:" %%a in ('time /t') do set currenttime=%%a:%%b
 
 :: Коммит с датой и временем
 git add .
-git commit -m "%currenttime% %currentdate%"
+git commit -m "%currenttime% %currentdate% "
 
 :: Пуш
 git push origin main
 
 echo.
-echo Pushed successfully at %currentdate% %currenttime%
+echo Pushed successfully at %currenttime% %currentdate% 
 pause
