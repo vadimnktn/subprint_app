@@ -15,4 +15,3 @@ git push origin main
 
 echo.
 echo Pushed successfully at %currenttime% %currentdate% 
-pause
