@@ -1,8 +1,6 @@
 # subprint_app/.github/workflows/build.yml
-# GitHub Actions workflow для автоматической сборки Android APK
 name: Build Android APK
 
-# Запуск при пуше в ветку main
 on:
   push:
     branches: [ main ]
@@ -12,17 +10,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Шаг 1: Клонирование репозитория
     - uses: actions/checkout@v4
     
-    # Шаг 2: Установка Java 11 для сборки Android
     - name: Set up JDK 11
       uses: actions/setup-java@v4
       with:
         java-version: '11'
         distribution: 'temurin'
         
-    # Шаг 3: Замена значений в config.properties на секреты из GitHub
     - name: Change config properties
       run: |
         cd app/src/main/assets
@@ -32,13 +27,9 @@ jobs:
         sed -i 's/connection_timeout=.*/connection_timeout=${{ secrets.CONNECTION_TIMEOUT }}/' config.properties
         sed -i 's/read_timeout=.*/read_timeout=${{ secrets.READ_TIMEOUT }}/' config.properties
         
-    # Шаг 4: Сборка APK через Gradle
     - name: Build APK
-      run: |
-        chmod +x gradlew
-        ./gradlew assembleRelease
+      run: gradle assembleRelease
         
-    # Шаг 5: Загрузка собранного APK как артефакта для скачивания
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
