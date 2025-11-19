@@ -10,8 +10,14 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - name: Find APK file
-      run: find . -name "*.apk" -type f
+    - name: Find all APK files
+      run: |
+        echo "=== Searching for APK files ==="
+        find . -name "*.apk" -type f | head -20
+        echo "=== App build directory ==="
+        ls -la app/build/outputs/ || echo "No outputs directory"
+        echo "=== Full app build structure ==="
+        find app/build/ -type f -name "*.apk" 2>/dev/null || echo "No APK files found"
       
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
