@@ -6,6 +6,8 @@ import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
@@ -71,8 +73,18 @@ public class MainActivity extends AppCompatActivity {
                 }
                 
                 @Override
+                public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
+                    // Перехватываем HTTP ошибки (404, 500, etc)
+                    showError();
+                }
+                
+                @Override
                 public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                    // Все ссылки грузятся в этом же WebView
+                    // Проверяем доступность перед загрузкой каждой ссылки
+                    if (!isServerAvailableQuick()) {
+                        showError();
+                        return true;
+                    }
                     view.loadUrl(url);
                     return true;
                 }
@@ -127,6 +139,22 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     
+    private boolean isServerAvailableQuick() {
+        try {
+            URL url = new URL(serverUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("HEAD");
+            connection.setConnectTimeout(2000);
+            connection.setReadTimeout(2000);
+            connection.connect();
+            int responseCode = connection.getResponseCode();
+            connection.disconnect();
+            return (responseCode == 200);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    
     private String getAppNameFromConfig() throws Exception {
         InputStream inputStream = getAssets().open("config.properties");
         Properties properties = new Properties();
@@ -171,9 +199,12 @@ public class MainActivity extends AppCompatActivity {
     }
     
     private void showError() {
-        splashScreen.setVisibility(View.GONE);
-        webView.setVisibility(View.GONE);
-        errorLayout.setVisibility(View.VISIBLE);
+        runOnUiThread(() -> {
+            splashScreen.setVisibility(View.GONE);
+            webView.setVisibility(View.GONE);
+            errorLayout.setVisibility(View.VISIBLE);
+            swipeRefreshLayout.setRefreshing(false);
+        });
     }
     
     @Override
