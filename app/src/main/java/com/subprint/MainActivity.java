@@ -6,6 +6,8 @@ import android.webkit.WebViewClient;
 import android.widget.RelativeLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import java.io.InputStream;
+import java.util.Properties;
 
 public class MainActivity extends AppCompatActivity {
     
@@ -26,14 +28,30 @@ public class MainActivity extends AppCompatActivity {
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setDomStorageEnabled(true);
         
-        // Загружаем URL
-        webView.loadUrl("https://google.com");
+        // Читаем URL из конфига
+        String serverUrl = getServerUrlFromConfig();
+        webView.loadUrl(serverUrl);
         
         // Настройка pull-to-refresh
         swipeRefreshLayout.setOnRefreshListener(() -> {
             webView.reload();
             swipeRefreshLayout.setRefreshing(false);
         });
+    }
+    
+    private String getServerUrlFromConfig() {
+        try {
+            InputStream inputStream = getAssets().open("config.properties");
+            Properties properties = new Properties();
+            properties.load(inputStream);
+            
+            String ip = properties.getProperty("server_ip", "192.168.0.10");
+            String port = properties.getProperty("server_port", "8001");
+            
+            return "http://" + ip + ":" + port;
+        } catch (Exception e) {
+            return "http://192.168.0.10:8001"; // fallback
+        }
     }
     
     @Override
