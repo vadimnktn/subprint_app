@@ -3,6 +3,7 @@ package com.subprint;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.RelativeLayout;
@@ -49,8 +50,10 @@ public class MainActivity extends AppCompatActivity {
             setSplashColorFromConfig();
             serverUrl = getServerUrlFromConfig();
             
-            // Проверяем доступность сервера перед загрузкой
-            checkServerAndLoad();
+            // ОТКЛЮЧАЕМ КЭШ - всегда свежие запросы к серверу
+            webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+            webView.getSettings().setJavaScriptEnabled(true);
+            webView.getSettings().setDomStorageEnabled(true);
             
             webView.setWebViewClient(new WebViewClient() {
                 @Override
@@ -60,10 +63,23 @@ public class MainActivity extends AppCompatActivity {
                     errorLayout.setVisibility(View.GONE);
                     swipeRefreshLayout.setRefreshing(false);
                 }
+                
+                @Override
+                public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+                    // Любая ошибка загрузки - показываем нашу ошибку
+                    showError();
+                }
+                
+                @Override
+                public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                    // Все ссылки грузятся в этом же WebView
+                    view.loadUrl(url);
+                    return true;
+                }
             });
             
-            webView.getSettings().setJavaScriptEnabled(true);
-            webView.getSettings().setDomStorageEnabled(true);
+            // Проверяем доступность сервера перед загрузкой
+            checkServerAndLoad();
             
             swipeRefreshLayout.setOnRefreshListener(() -> {
                 // При ручном обновлении тоже проверяем доступность
