@@ -29,6 +29,22 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        // УСТАНАВЛИВАЕМ ФОН ДО setContentView
+        try {
+            InputStream inputStream = getAssets().open("config.properties");
+            Properties properties = new Properties();
+            properties.load(inputStream);
+            String color = properties.getProperty("splash_color");
+            if (color != null) {
+                // Устанавливаем фон для всего окна
+                View decorView = getWindow().getDecorView();
+                decorView.setBackgroundColor(Color.parseColor(color));
+            }
+        } catch (Exception e) {
+            // Игнорируем ошибки
+        }
+        
         setContentView(R.layout.activity_main);
         
         webView = findViewById(R.id.webView);
@@ -49,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
             String appName = getAppNameFromConfig();
             setTitle(appName);
             
-            // Устанавливаем фон ПРИ ЗАГРУЗКЕ приложения
             setSplashColorFromConfig();
             serverUrl = getServerUrlFromConfig();
             
