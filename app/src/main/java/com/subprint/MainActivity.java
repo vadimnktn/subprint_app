@@ -3,7 +3,6 @@ package com.subprint;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
-import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.RelativeLayout;
@@ -12,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import java.io.InputStream;
 import java.util.Properties;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
     
@@ -20,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     private RelativeLayout errorLayout;
     private View splashScreen;
     private TextView errorText;
+    private String serverUrl;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,8 +47,10 @@ public class MainActivity extends AppCompatActivity {
             setTitle(appName);
             
             setSplashColorFromConfig();
-            String serverUrl = getServerUrlFromConfig();
-            webView.loadUrl(serverUrl);
+            serverUrl = getServerUrlFromConfig();
+            
+            // Проверяем доступность сервера перед загрузкой
+            checkServerAndLoad();
             
             webView.setWebViewClient(new WebViewClient() {
                 @Override
@@ -54,23 +58,7 @@ public class MainActivity extends AppCompatActivity {
                     splashScreen.setVisibility(View.GONE);
                     webView.setVisibility(View.VISIBLE);
                     errorLayout.setVisibility(View.GONE);
-                }
-                
-                @Override
-                public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-                    showError();
-                }
-            });
-            
-            // Добавляем WebChromeClient для перехвата дополнительных ошибок
-            webView.setWebChromeClient(new WebChromeClient() {
-                @Override
-                public void onReceivedTitle(WebView view, String title) {
-                    super.onReceivedTitle(view, title);
-                    // Если в заголовке страницы есть ошибка
-                    if (title != null && (title.contains("ERR_") || title.contains("Ошибка"))) {
-                        showError();
-                    }
+                    swipeRefreshLayout.setRefreshing(false);
                 }
             });
             
@@ -78,12 +66,48 @@ public class MainActivity extends AppCompatActivity {
             webView.getSettings().setDomStorageEnabled(true);
             
             swipeRefreshLayout.setOnRefreshListener(() -> {
-                webView.reload();
-                swipeRefreshLayout.setRefreshing(false);
+                // При ручном обновлении тоже проверяем доступность
+                checkServerAndLoad();
             });
             
         } catch (Exception e) {
             showError();
+        }
+    }
+    
+    private void checkServerAndLoad() {
+        new Thread(() -> {
+            boolean serverAvailable = isServerAvailable();
+            
+            runOnUiThread(() -> {
+                if (serverAvailable) {
+                    // Сервер доступен - загружаем страницу
+                    splashScreen.setVisibility(View.VISIBLE);
+                    webView.setVisibility(View.GONE);
+                    errorLayout.setVisibility(View.GONE);
+                    webView.loadUrl(serverUrl);
+                } else {
+                    // Сервер недоступен - показываем нашу ошибку
+                    showError();
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+            });
+        }).start();
+    }
+    
+    private boolean isServerAvailable() {
+        try {
+            URL url = new URL(serverUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("HEAD");
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
+            connection.connect();
+            int responseCode = connection.getResponseCode();
+            connection.disconnect();
+            return (responseCode == 200);
+        } catch (Exception e) {
+            return false;
         }
     }
     
@@ -131,13 +155,6 @@ public class MainActivity extends AppCompatActivity {
     }
     
     private void showError() {
-        try {
-            // Устанавливаем фон из конфига
-            setSplashColorFromConfig();
-        } catch (Exception e) {
-            // Если не получилось - оставляем текущий цвет
-        }
-        
         splashScreen.setVisibility(View.GONE);
         webView.setVisibility(View.GONE);
         errorLayout.setVisibility(View.VISIBLE);
