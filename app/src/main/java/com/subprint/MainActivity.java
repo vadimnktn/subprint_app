@@ -1,8 +1,10 @@
 package com.subprint;
 
 import android.os.Bundle;
+import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -14,6 +16,7 @@ public class MainActivity extends AppCompatActivity {
     private WebView webView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private RelativeLayout errorLayout;
+    private ImageView splashScreen;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,8 +26,24 @@ public class MainActivity extends AppCompatActivity {
         webView = findViewById(R.id.webView);
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
         errorLayout = findViewById(R.id.errorLayout);
+        splashScreen = findViewById(R.id.splashScreen);
         
-        webView.setWebViewClient(new WebViewClient());
+        // Полный экран
+        getWindow().getDecorView().setSystemUiVisibility(
+            View.SYSTEM_UI_FLAG_FULLSCREEN
+            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        );
+        
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                // Скрываем splash когда страница загрузилась
+                splashScreen.setVisibility(View.GONE);
+                webView.setVisibility(View.VISIBLE);
+            }
+        });
+        
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setDomStorageEnabled(true);
         
@@ -32,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
         String serverUrl = getServerUrlFromConfig();
         webView.loadUrl(serverUrl);
         
-        // Настройка pull-to-refresh
         swipeRefreshLayout.setOnRefreshListener(() -> {
             webView.reload();
             swipeRefreshLayout.setRefreshing(false);
@@ -50,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
             
             return "http://" + ip + ":" + port;
         } catch (Exception e) {
-            return "http://192.168.0.10:8001"; // fallback
+            return "http://192.168.0.10:8001";
         }
     }
     
