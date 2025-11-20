@@ -49,11 +49,14 @@ public class MainActivity extends AppCompatActivity {
             String appName = getAppNameFromConfig();
             setTitle(appName);
             
+            // Устанавливаем фон ПРИ ЗАГРУЗКЕ приложения
             setSplashColorFromConfig();
             serverUrl = getServerUrlFromConfig();
             
-            // ОТКЛЮЧАЕМ КЭШ - всегда свежие запросы к серверу
+            // ПОЛНОСТЬЮ ОТКЛЮЧАЕМ КЭШ
             webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+            webView.getSettings().setAppCacheEnabled(false);
+            webView.clearCache(true);
             webView.getSettings().setJavaScriptEnabled(true);
             webView.getSettings().setDomStorageEnabled(true);
             

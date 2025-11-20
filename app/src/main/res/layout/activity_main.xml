@@ -32,25 +32,31 @@
             android:orientation="vertical"
             android:background="@android:color/transparent">
 
-            <TextView
-                android:id="@+id/errorIcon"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="✗"
-                android:textSize="48sp"
-                android:textColor="#FF0000"
-                android:layout_centerHorizontal="true"/>
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_centerInParent="true">
 
-            <TextView
-                android:id="@+id/errorText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Сервер недоступен"
-                android:textSize="24sp"
-                android:textColor="#FF0000"
-                android:layout_below="@+id/errorIcon"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="10dp"/>
+                <TextView
+                    android:id="@+id/errorIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="✗"
+                    android:textSize="48sp"
+                    android:textColor="#FF0000"
+                    android:layout_marginRight="10dp"/>
+
+                <TextView
+                    android:id="@+id/errorText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Сервер недоступен"
+                    android:textSize="24sp"
+                    android:textColor="#FF0000"/>
+
+            </LinearLayout>
 
         </RelativeLayout>
 
