@@ -98,6 +98,13 @@ public class MainActivity extends AppCompatActivity {
     }
     
     private void showError(String message) {
+        try {
+            // Устанавливаем тот же фон что и у splash
+            setSplashColorFromConfig();
+        } catch (Exception e) {
+            // Если не получилось - оставляем текущий цвет
+        }
+        
         splashScreen.setVisibility(View.GONE);
         webView.setVisibility(View.GONE);
         errorLayout.setVisibility(View.VISIBLE);
