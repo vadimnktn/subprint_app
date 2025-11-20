@@ -39,6 +39,10 @@ public class MainActivity extends AppCompatActivity {
         );
         
         try {
+            // Установить название приложения из конфига
+            String appName = getAppNameFromConfig();
+            setTitle(appName);
+            
             setSplashColorFromConfig();
             String serverUrl = getServerUrlFromConfig();
             webView.loadUrl(serverUrl);
@@ -67,6 +71,19 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             showError("Ошибка конфига: " + e.getMessage());
         }
+    }
+    
+    private String getAppNameFromConfig() throws Exception {
+        InputStream inputStream = getAssets().open("config.properties");
+        Properties properties = new Properties();
+        properties.load(inputStream);
+        
+        String appName = properties.getProperty("app_name");
+        if (appName == null) {
+            throw new Exception("app_name not found in config");
+        }
+        
+        return appName;
     }
     
     private String getServerUrlFromConfig() throws Exception {
