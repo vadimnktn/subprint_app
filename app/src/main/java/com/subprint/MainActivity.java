@@ -1,11 +1,12 @@
 package com.subprint;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import java.io.InputStream;
@@ -16,7 +17,8 @@ public class MainActivity extends AppCompatActivity {
     private WebView webView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private RelativeLayout errorLayout;
-    private ImageView splashScreen;
+    private View splashScreen;
+    private TextView errorText;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
         errorLayout = findViewById(R.id.errorLayout);
         splashScreen = findViewById(R.id.splashScreen);
+        errorText = findViewById(R.id.errorText);
         
         // Полный экран
         getWindow().getDecorView().setSystemUiVisibility(
@@ -35,41 +38,70 @@ public class MainActivity extends AppCompatActivity {
             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
         );
         
-        webView.setWebViewClient(new WebViewClient() {
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                // Скрываем splash когда страница загрузилась
-                splashScreen.setVisibility(View.GONE);
-                webView.setVisibility(View.VISIBLE);
-            }
-        });
-        
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.getSettings().setDomStorageEnabled(true);
-        
-        // Читаем URL из конфига
-        String serverUrl = getServerUrlFromConfig();
-        webView.loadUrl(serverUrl);
-        
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            webView.reload();
-            swipeRefreshLayout.setRefreshing(false);
-        });
+        try {
+            setSplashColorFromConfig();
+            String serverUrl = getServerUrlFromConfig();
+            webView.loadUrl(serverUrl);
+            
+            webView.setWebViewClient(new WebViewClient() {
+                @Override
+                public void onPageFinished(WebView view, String url) {
+                    splashScreen.setVisibility(View.GONE);
+                    webView.setVisibility(View.VISIBLE);
+                }
+                
+                @Override
+                public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+                    showError("Ошибка загрузки: " + description);
+                }
+            });
+            
+            webView.getSettings().setJavaScriptEnabled(true);
+            webView.getSettings().setDomStorageEnabled(true);
+            
+            swipeRefreshLayout.setOnRefreshListener(() -> {
+                webView.reload();
+                swipeRefreshLayout.setRefreshing(false);
+            });
+            
+        } catch (Exception e) {
+            showError("Ошибка конфига: " + e.getMessage());
+        }
     }
     
-    private String getServerUrlFromConfig() {
-        try {
-            InputStream inputStream = getAssets().open("config.properties");
-            Properties properties = new Properties();
-            properties.load(inputStream);
-            
-            String ip = properties.getProperty("server_ip", "192.168.0.10");
-            String port = properties.getProperty("server_port", "8001");
-            
-            return "http://" + ip + ":" + port;
-        } catch (Exception e) {
-            return "http://192.168.0.10:8001";
+    private String getServerUrlFromConfig() throws Exception {
+        InputStream inputStream = getAssets().open("config.properties");
+        Properties properties = new Properties();
+        properties.load(inputStream);
+        
+        String ip = properties.getProperty("server_ip");
+        String port = properties.getProperty("server_port");
+        
+        if (ip == null || port == null) {
+            throw new Exception("server_ip or server_port not found in config");
         }
+        
+        return "http://" + ip + ":" + port;
+    }
+    
+    private void setSplashColorFromConfig() throws Exception {
+        InputStream inputStream = getAssets().open("config.properties");
+        Properties properties = new Properties();
+        properties.load(inputStream);
+        
+        String color = properties.getProperty("splash_color");
+        if (color == null) {
+            throw new Exception("splash_color not found in config");
+        }
+        
+        splashScreen.setBackgroundColor(Color.parseColor(color));
+    }
+    
+    private void showError(String message) {
+        splashScreen.setVisibility(View.GONE);
+        webView.setVisibility(View.GONE);
+        errorLayout.setVisibility(View.VISIBLE);
+        errorText.setText(message);
     }
     
     @Override
