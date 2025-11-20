@@ -55,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
             
             // ПОЛНОСТЬЮ ОТКЛЮЧАЕМ КЭШ
             webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-            webView.getSettings().setAppCacheEnabled(false);
             webView.clearCache(true);
             webView.getSettings().setJavaScriptEnabled(true);
             webView.getSettings().setDomStorageEnabled(true);
