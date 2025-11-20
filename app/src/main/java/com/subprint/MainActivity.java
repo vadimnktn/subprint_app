@@ -3,6 +3,7 @@ package com.subprint;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.RelativeLayout;
@@ -61,6 +62,18 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
             
+            // Добавляем WebChromeClient для перехвата дополнительных ошибок
+            webView.setWebChromeClient(new WebChromeClient() {
+                @Override
+                public void onReceivedTitle(WebView view, String title) {
+                    super.onReceivedTitle(view, title);
+                    // Если в заголовке страницы есть ошибка
+                    if (title != null && (title.contains("ERR_") || title.contains("Ошибка"))) {
+                        showError();
+                    }
+                }
+            });
+            
             webView.getSettings().setJavaScriptEnabled(true);
             webView.getSettings().setDomStorageEnabled(true);
             
@@ -113,6 +126,8 @@ public class MainActivity extends AppCompatActivity {
         }
         
         splashScreen.setBackgroundColor(Color.parseColor(color));
+        // Устанавливаем тот же фон для errorLayout
+        errorLayout.setBackgroundColor(Color.parseColor(color));
     }
     
     private void showError() {
