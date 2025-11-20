@@ -52,11 +52,12 @@ public class MainActivity extends AppCompatActivity {
                 public void onPageFinished(WebView view, String url) {
                     splashScreen.setVisibility(View.GONE);
                     webView.setVisibility(View.VISIBLE);
+                    errorLayout.setVisibility(View.GONE);
                 }
                 
                 @Override
                 public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-                    showError("Ошибка загрузки: " + description);
+                    showError();
                 }
             });
             
@@ -69,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
             });
             
         } catch (Exception e) {
-            showError("Ошибка конфига: " + e.getMessage());
+            showError();
         }
     }
     
@@ -114,9 +115,9 @@ public class MainActivity extends AppCompatActivity {
         splashScreen.setBackgroundColor(Color.parseColor(color));
     }
     
-    private void showError(String message) {
+    private void showError() {
         try {
-            // Устанавливаем тот же фон что и у splash
+            // Устанавливаем фон из конфига
             setSplashColorFromConfig();
         } catch (Exception e) {
             // Если не получилось - оставляем текущий цвет
@@ -125,7 +126,6 @@ public class MainActivity extends AppCompatActivity {
         splashScreen.setVisibility(View.GONE);
         webView.setVisibility(View.GONE);
         errorLayout.setVisibility(View.VISIBLE);
-        errorText.setText(message);
     }
     
     @Override
