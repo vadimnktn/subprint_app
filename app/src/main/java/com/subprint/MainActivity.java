@@ -24,7 +24,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        // Устанавливаем фон ДО setContentView
         try {
             InputStream inputStream = getAssets().open("config.properties");
             Properties properties = new Properties();
@@ -34,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
                 getWindow().getDecorView().setBackgroundColor(Color.parseColor(color));
             }
         } catch (Exception e) {
-            // Без оповещений
         }
         
         setContentView(R.layout.activity_main);
@@ -43,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
         splashScreen = findViewById(R.id.splashScreen);
         
-        // Полный экран
         getWindow().getDecorView().setSystemUiVisibility(
             View.SYSTEM_UI_FLAG_FULLSCREEN
             | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
@@ -58,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
             serverUrl = getServerUrlFromConfig();
             int startDelay = getStartDelayFromConfig();
             
-            // Отключаем кэш
             webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
             webView.clearCache(true);
             webView.getSettings().setJavaScriptEnabled(true);
@@ -74,16 +70,13 @@ public class MainActivity extends AppCompatActivity {
                 
                 @Override
                 public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-                    // Перехватываем ошибку но ничего не показываем
                 }
                 
                 @Override
                 public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
-                    // Перехватываем HTTP ошибки
                 }
             });
             
-            // ЗАДЕРЖКА из конфига перед первой загрузкой
             splashScreen.setVisibility(View.VISIBLE);
             webView.setVisibility(View.GONE);
             
@@ -97,7 +90,6 @@ public class MainActivity extends AppCompatActivity {
             });
             
         } catch (Exception e) {
-            // Без оповещений об ошибках
         }
     }
     
@@ -136,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
         
         String delay = properties.getProperty("start_delay");
         if (delay == null) {
-            return 2000; // значение по умолчанию
+            return 2000;
         }
         
         return Integer.parseInt(delay);
