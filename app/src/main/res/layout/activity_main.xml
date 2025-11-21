@@ -23,37 +23,6 @@
             android:layout_height="match_parent"
             android:visibility="gone"/>
 
-        <RelativeLayout
-            android:id="@+id/errorLayout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:background="@android:color/transparent">
-
-            <TextView
-                android:id="@+id/errorIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="✗"
-                android:textSize="48sp"
-                android:textColor="#FF0000"
-                android:layout_centerHorizontal="true"/>
-
-            <TextView
-                android:id="@+id/errorText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Сервер недоступен"
-                android:textSize="24sp"
-                android:textColor="#FF0000"
-                android:layout_below="@+id/errorIcon"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="10dp"/>
-
-        </RelativeLayout>
-
     </RelativeLayout>
 
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
