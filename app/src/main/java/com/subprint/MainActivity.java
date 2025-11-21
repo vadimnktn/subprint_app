@@ -30,19 +30,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        // УСТАНАВЛИВАЕМ ФОН ДО setContentView
+        // Устанавливаем фон ДО setContentView
         try {
             InputStream inputStream = getAssets().open("config.properties");
             Properties properties = new Properties();
             properties.load(inputStream);
             String color = properties.getProperty("splash_color");
             if (color != null) {
-                // Устанавливаем фон для всего окна
-                View decorView = getWindow().getDecorView();
-                decorView.setBackgroundColor(Color.parseColor(color));
+                getWindow().getDecorView().setBackgroundColor(Color.parseColor(color));
             }
         } catch (Exception e) {
-            // Игнорируем ошибки
+            // Без оповещений
         }
         
         setContentView(R.layout.activity_main);
@@ -61,14 +59,13 @@ public class MainActivity extends AppCompatActivity {
         );
         
         try {
-            // Установить название приложения из конфига
             String appName = getAppNameFromConfig();
             setTitle(appName);
             
             setSplashColorFromConfig();
             serverUrl = getServerUrlFromConfig();
             
-            // ПОЛНОСТЬЮ ОТКЛЮЧАЕМ КЭШ
+            // Отключаем кэш
             webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
             webView.clearCache(true);
             webView.getSettings().setJavaScriptEnabled(true);
@@ -85,19 +82,16 @@ public class MainActivity extends AppCompatActivity {
                 
                 @Override
                 public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-                    // Любая ошибка загрузки - показываем нашу ошибку
                     showError();
                 }
                 
                 @Override
                 public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
-                    // Перехватываем HTTP ошибки (404, 500, etc)
                     showError();
                 }
                 
                 @Override
                 public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                    // Проверяем доступность перед загрузкой каждой ссылки
                     if (!isServerAvailableQuick()) {
                         showError();
                         return true;
@@ -107,11 +101,9 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
             
-            // Проверяем доступность сервера перед загрузкой
             checkServerAndLoad();
             
             swipeRefreshLayout.setOnRefreshListener(() -> {
-                // При ручном обновлении тоже проверяем доступность
                 checkServerAndLoad();
             });
             
@@ -126,13 +118,11 @@ public class MainActivity extends AppCompatActivity {
             
             runOnUiThread(() -> {
                 if (serverAvailable) {
-                    // Сервер доступен - загружаем страницу
                     splashScreen.setVisibility(View.VISIBLE);
                     webView.setVisibility(View.GONE);
                     errorLayout.setVisibility(View.GONE);
                     webView.loadUrl(serverUrl);
                 } else {
-                    // Сервер недоступен - показываем нашу ошибку
                     showError();
                     swipeRefreshLayout.setRefreshing(false);
                 }
@@ -179,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
         
         String appName = properties.getProperty("app_name");
         if (appName == null) {
-            throw new Exception("app_name not found in config");
+            throw new Exception();
         }
         
         return appName;
@@ -194,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
         String port = properties.getProperty("server_port");
         
         if (ip == null || port == null) {
-            throw new Exception("server_ip or server_port not found in config");
+            throw new Exception();
         }
         
         return "http://" + ip + ":" + port;
@@ -207,11 +197,10 @@ public class MainActivity extends AppCompatActivity {
         
         String color = properties.getProperty("splash_color");
         if (color == null) {
-            throw new Exception("splash_color not found in config");
+            throw new Exception();
         }
         
         splashScreen.setBackgroundColor(Color.parseColor(color));
-        // Устанавливаем тот же фон для errorLayout
         errorLayout.setBackgroundColor(Color.parseColor(color));
     }
     
