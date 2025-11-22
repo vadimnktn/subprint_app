@@ -6,6 +6,8 @@ import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.widget.RelativeLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -55,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
             
             setSplashColorFromConfig();
             serverUrl = getServerUrlFromConfig();
+            int startDelay = getStartDelayFromConfig();
             
             // Отключаем кэш
             webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
@@ -69,12 +72,25 @@ public class MainActivity extends AppCompatActivity {
                     webView.setVisibility(View.VISIBLE);
                     swipeRefreshLayout.setRefreshing(false);
                 }
+                
+                @Override
+                public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+                    // Перехватываем ошибку но ничего не показываем
+                }
+                
+                @Override
+                public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
+                    // Перехватываем HTTP ошибки
+                }
             });
             
-            // Загружаем страницу без проверок
+            // ЗАДЕРЖКА из конфига перед первой загрузкой
             splashScreen.setVisibility(View.VISIBLE);
             webView.setVisibility(View.GONE);
-            webView.loadUrl(serverUrl);
+            
+            new android.os.Handler().postDelayed(() -> {
+                webView.loadUrl(serverUrl);
+            }, startDelay);
             
             swipeRefreshLayout.setOnRefreshListener(() -> {
                 webView.reload();
@@ -112,6 +128,19 @@ public class MainActivity extends AppCompatActivity {
         }
         
         return "http://" + ip + ":" + port;
+    }
+    
+    private int getStartDelayFromConfig() throws Exception {
+        InputStream inputStream = getAssets().open("config.properties");
+        Properties properties = new Properties();
+        properties.load(inputStream);
+        
+        String delay = properties.getProperty("start_delay");
+        if (delay == null) {
+            return 2000; // значение по умолчанию
+        }
+        
+        return Integer.parseInt(delay);
     }
     
     private void setSplashColorFromConfig() throws Exception {
