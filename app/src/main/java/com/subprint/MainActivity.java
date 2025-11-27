@@ -52,8 +52,14 @@ public class MainActivity extends AppCompatActivity {
         );
         
         try {
-            String appName = getAppNameFromConfig();
-            setTitle(appName);
+            // Обновляем название приложения из конфига
+            InputStream inputStream = getAssets().open("config.properties");
+            Properties properties = new Properties();
+            properties.load(inputStream);
+            String appName = properties.getProperty("app_name");
+            if (appName != null) {
+                setTitle(appName);
+            }
             
             setSplashColorFromConfig();
             serverUrl = getServerUrlFromConfig();
@@ -100,19 +106,6 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             // Без оповещений об ошибках
         }
-    }
-    
-    private String getAppNameFromConfig() throws Exception {
-        InputStream inputStream = getAssets().open("config.properties");
-        Properties properties = new Properties();
-        properties.load(inputStream);
-        
-        String appName = properties.getProperty("app_name");
-        if (appName == null) {
-            throw new Exception();
-        }
-        
-        return appName;
     }
     
     private String getServerUrlFromConfig() throws Exception {
