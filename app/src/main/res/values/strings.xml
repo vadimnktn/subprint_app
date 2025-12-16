@@ -1,5 +1,0 @@
-<!-- subprint_app/app/src/main/res/values/strings.xml -->
-<!-- Файл строковых ресурсов приложения -->
-<resources>
-    <string name="app_name">SubPrint</string>
-</resources>

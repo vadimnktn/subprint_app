@@ -1,0 +1,22 @@
+# APK файлы
+*.apk
+
+# Ключи и подписи
+*.keystore
+*.jks
+sign/
+
+# Временные/скрипты
+*.bat
+*.txt
+config.properties
+
+# Системные папки
+System Volume Information/
+
+# Картинки (опционально)
+ic_launcher*.png
+
+# Дубли
+* — копия*
+*копия*
